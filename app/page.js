@@ -1,96 +1,71 @@
 "use client";
-import Link from "next/link";
-import React, { useState } from "react";
 
-const InputText = ({ label, name, value, onChange }) => {
+const InputText = ({ label, name }) => {
   return (
     <div className="mb-4">
-      <label className="block text-gray-600">{label}</label>
+      <label className="text-gray-600">{label}</label>
       <input
         type="text"
         name={name}
-        value={value}
-        onChange={onChange}
-        className="form-input mt-1 p-2 outline-none block w-full border"
+        className="form-input mt-1 p-1 outline-none w-full border"
       />
     </div>
   );
 };
 
 const RestaurantForm = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    map: "",
-    website: "",
-    facebook: "",
-    instagram: "",
-    phone: "",
-    email: "",
-    location: "",
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
+    const form = e.target;
+    const name = form.name.value;
+    const map = form.map.value;
+    const website = form.website.value;
+    const facebook = form.facebook.value;
+    const instagram = form.instagram.value;
+    const phone = form.phone.value;
+    const email = form.email.value;
 
-    console.log("Form submitted:", formData);
+    const formData = {
+      name,
+      map,
+      website,
+      facebook,
+      instagram,
+      phone,
+      email,
+    };
+
+    fetch("http://localhost:5000/data", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Data submitted successfully:", data);
+      })
+      .catch((error) => {
+        console.error("Error submitting data:", error);
+      });
+    form.reset();
   };
 
   return (
     <>
       <form className="max-w-md mx-auto p-4" onSubmit={handleSubmit}>
-        <InputText
-          label={"Restaurant Name"}
-          name={"name"}
-          value={formData.name}
-          onChange={handleChange}
-        />
-
-        <InputText
-          label={"Restaurant Map"}
-          name={"map"}
-          value={formData.map}
-          onChange={handleChange}
-        />
-
-        <InputText
-          label={"Restaurant Website"}
-          name={"website"}
-          value={formData.website}
-          onChange={handleChange}
-        />
-
-        <InputText
-          label={"Restaurant Phone"}
-          name={"phone"}
-          value={formData.phone}
-          onChange={handleChange}
-        />
-
-        <InputText
-          label={"Restaurant Email"}
-          name={"email"}
-          value={formData.email}
-          onChange={handleChange}
-        />
-
-        <InputText
-          label={"Restaurant Facebook"}
-          name={"facebook"}
-          value={formData.facebook}
-          onChange={handleChange}
-        />
-
-        <InputText
-          label={"Restaurant Instagram"}
-          name={"instagram"}
-          value={formData.instagram}
-          onChange={handleChange}
-        />
+        <div>
+          <InputText label={"Restaurant Name"} name={"name"} />
+          <InputText label={"Restaurant Map"} name={"map"} />
+          <InputText label={"Restaurant Website"} name={"website"} />
+          <InputText label={"Restaurant Phone"} name={"phone"} />
+        </div>
+        <div>
+          <InputText label={"Restaurant Email"} name={"email"} />
+          <InputText label={"Restaurant Facebook"} name={"facebook"} />
+          <InputText label={"Restaurant Instagram"} name={"instagram"} />
+        </div>
         <div className="mb-4">
           <button
             type="submit"
@@ -100,14 +75,6 @@ const RestaurantForm = () => {
           </button>
         </div>
       </form>
-      <div className="flex items-center justify-center">
-        <Link
-          href={"/resto-data"}
-          className="bg-red-400 p-2 mt-5 rounded text-white "
-        >
-          Data
-        </Link>
-      </div>
     </>
   );
 };
